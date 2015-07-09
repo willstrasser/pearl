@@ -28,7 +28,7 @@ module.exports = function(express, app, passport, config, mongoose){
 		var url_parts = url.parse(req.url, true);
 		var query = url_parts.query;
 
-		request('http://'+req.headers.host+'/db/advance', function(error,response,body){
+		request('http://'+req.headers.host+'/db/advance'+req.url, function(error,response,body){
 		  if (!error && response.statusCode == 200) {
 		  	res.render('feed', { funds:response.body, query:JSON.stringify(query)});
 		  }
