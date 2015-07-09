@@ -1,0 +1,487 @@
+<html>
+<head>
+	<title>Pearl - Activitiy</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+    <script src="https://fb.me/react-with-addons-0.13.3.js"></script>
+	<script src="https://fb.me/JSXTransformer-0.13.3.js"></script>
+
+	<script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="http://underscorejs.org/underscore-min.js"></script>
+    <script src="http://momentjs.com/downloads/moment.min.js"></script>
+    <script src="https://raw.githubusercontent.com/cowboy/jquery-throttle-debounce/v1.1/jquery.ba-throttle-debounce.min.js"></script>
+
+    <script src="/javascripts/fixed-data-table.min.js"></script>
+    <link rel="stylesheet" href="/stylesheets/fixed-data-table.css" />
+</head>
+<body>
+<div id="main">
+	<header>
+		<h1>Pearl</h1>
+		<div id='right-stuff'><a href="#"><i class="fa fa-cog"></i></a></div>
+	</header>
+	<nav>
+		<!-- <div id="profile-header"><img src="#"/></div> -->
+		<ul>
+			<li class="cur-page"><a href="/"><i class="fa fa-line-chart"></i> Activity</a></li>
+			<li><a href="/advances"><i class="fa fa-table"></i> Details</a></li>
+			<li><a href="/"><i class="fa fa-university"></i> My Funds</a></li>
+			<li><a href="/"><i class="fa fa-life-ring"></i> Fourth</a></li>
+			<li><a href="/"><i class="fa fa-anchor"></i> Fifth</a></li>
+		</ul>
+	</nav>
+	<div id="fund-list-holder"></div>
+</div>
+
+<script type="text/jsx">
+var mountNode = document.getElementById('fund-list-holder');
+function d(str){
+	return numeral(str).format('$0,0')
+}
+var waitingForLoad = false;
+var PropTypes = React.PropTypes;
+var Table = FixedDataTable.Table;
+var Column = FixedDataTable.Column;
+var SortTypes = {
+  ASC: 'ASC',
+  DESC: 'DESC',
+};
+
+
+var QueryForm = React.createClass({
+    getInitialState: function() {
+    	return {
+    		queryData:this.props.queryData
+    	}
+    },
+    onFormSubmit:function(e){
+        $('form').children(':input[value=""]').attr("disabled", "disabled");
+        // e.preventDefault();
+    	$('form').submit();
+    },
+    render:function(){
+    	var qd = this.state.queryData;
+    	selectors = [];
+    	if(qd.fundId) 			selectors.push(<QueryString qKey='fundId' label='Fund ID matching' value={qd.fundId} />)
+    	if(qd.merchId) 			selectors.push(<QueryString qKey='merchId' label='Merchant ID matching' value={qd.merchId} />)
+    	if(qd.term) 			selectors.push(<QueryString qKey='term' label='Term of' value={qd.term} />)
+    	if(qd.fundedAmount) 	selectors.push(<QueryString qKey='fundedAmount' label='Funding amount of' value={qd.fundedAmount} />)
+    	if(qd.paybackAmount)	selectors.push(<QueryString qKey='paybackAmount' label='Payback Amount amount of' value={qd.paybackAmount} />)
+    	if(qd.status) 			selectors.push(<QueryString qKey='status' label='Status is' value={qd.status} />)
+    	if(qd.zipCode) 			selectors.push(<QueryString qKey='zipCode' label='Zip Code is' value={qd.zipCode} />)
+    	if(qd.sector) 			selectors.push(<QueryString qKey='sector' label='Sector is' value={qd.sector} />)
+    	if(qd.industry) 		selectors.push(<QueryString qKey='industry' label='Industry is' value={qd.industry} />)
+
+  //   	var oqd = {{{query}}};
+		// defaultValue={oqd.fundId||''}
+		// defaultValue={oqd.merchId||''}
+		// defaultValue={oqd.term||''}
+		// defaultValue={oqd.fundedAmount||''}
+		// defaultValue={oqd.paybackAmount||''}
+		// defaultValue={oqd.status||''}
+		// defaultValue={oqd.zipCode||''}
+		// defaultValue={oqd.sector||''}
+		// defaultValue={oqd.industry||''}
+    	return(
+    		<div className={selectors.length>0?'query-form':'hidden'}>
+    			Showing __ fundings which match:{selectors}<br/>
+    			<div>
+    			<form onSubmit={this.onFormSubmit}>
+    				<label for='fundId'>Fund ID: </label>				<input defaultValue='' name='fundId'/><br/>
+    				<label for='merchId'>Merchant ID: </label>			<input defaultValue='' name='merchId'/><br/>
+    				<label for='term'>Term: </label>					<input defaultValue='' name='term'/><br/>
+    				<label for='fundedAmount'>Funded Amount: </label>	<input defaultValue='' name='fundedAmount'/><br/>
+    				<label for='paybackAmount'>Payback Amount: </label>	<input defaultValue='' name='paybackAmount'/><br/>
+    				<label for='status'>Status: </label>				<input defaultValue='' name='status'/><br/>
+    				<label for='zipCode'>Zip Code: </label>				<input defaultValue='' name='zipCode'/><br/>
+    				<label for='sector'>Sector: </label>				<input defaultValue='' name='sector'/><br/>
+    				<label for='industry'>Industry: </label>			<input defaultValue='' name='industry'/><br/>
+    				<input type="submit" />
+    			</form>
+    			</div>
+    		</div>
+    	)
+    }
+
+});
+
+var QueryString = React.createClass({
+	getInitialState:function(){
+		return({
+			editing:false
+		})
+	},
+	clickHandler:function(){
+		// this.setState({editing:true});
+	},
+	render:function(){
+        var cx = React.addons.classSet;
+        var classes = cx({
+        	"query-bit": true,
+        	'editing': this.state.editing
+        });
+        //<input placeholder={this.props.value} type="text" name={this.props.qKey}></input>
+		return(
+			<div className={classes} onClick={this.clickHandler}>&nbsp; {this.props.label} <span className='value-text'>{this.props.value}</span>
+			</div>
+		)
+	}
+})
+
+
+var Fund = React.createClass({
+    getInitialState: function() {
+        return {
+            paymentData:[],
+            dataView:'',
+            open:false
+        };
+    },
+	loadPaymentData: function() {
+		$.ajax({
+			context:this,
+			url: "db/payments", 
+			data: { fundId: this.props.fundData.fundId }
+		}).done(function( msg ) {
+			console.log('payments loaded');
+			this.setState({paymentData:msg});
+		});
+	},
+	handleClick:function(){
+		if(!this.state.open){
+			this.loadPaymentData();
+			this.setState({open:true, dataView:'chart'});
+		}
+	},
+	viewToggle:function(){
+		this.setState({dataView:this.state.dataView=='table'?'chart':'table'});
+	},
+	viewChart:function(){
+		this.setState({dataView:'chart'});
+	},
+	viewTable:function(){
+		this.setState({dataView:'table'});
+	},
+	render:function(){
+		var fd = this.props.fundData;
+        var cx = React.addons.classSet;
+        var classes = cx({
+        	'fund': true,
+            'default': fd.status==='Default',
+            'open': this.state.open,
+            'showing-chart':this.state.dataView==='chart',
+            'showing-table':this.state.dataView==='table'
+        });
+        var view;
+        if(this.state.dataView=='chart'){
+        	view = (<GoogleLineChart lineData={this.state.paymentData} fundData={fd}/>);
+        }
+        else if(this.state.dataView=='table'){
+        	view = (<PaymentTable payments={this.state.paymentData} fundData={fd}/>);
+        }
+		return(
+			<div className={classes} onClick={this.handleClick}>
+				<div className="view-toggle">
+					<i onClick={this.viewChart} className="fa fa-line-chart"></i>
+					<i onClick={this.viewTable} className="fa fa-table"></i>
+				</div>
+				<FundDetails fundData={fd} />
+				{view}
+			</div>
+		);
+	}
+});
+
+var FundDetails = React.createClass({
+	render:function(){
+		var fd = this.props.fundData;
+		var dateString = fd.fundDate;
+		if(dateString) {
+			dateString = new Date(dateString.split(' ')[0]).toDateString();
+			dateString = moment(dateString).format('l');
+		}
+		return(
+			<div className='fund-details'>
+				<div className='basic-info'>
+					<div className='fund-title'>Fund {fd.fundId}</div>
+					<div className='date-info'>
+						{dateString} for <a href={'/?term='+fd.term}>{fd.term} Days</a> 
+					</div>
+				</div>
+				
+				<div className='amount-info'>
+					Funded: <span className='funded-amount'>
+						<a href={'/?fundedAmount='+fd.fundedAmount}>{d(fd.fundedAmount)}</a>
+					</span> at {fd.factorPnt}<br/>
+					Payback Amount: <span className='payback-amount'>
+						<a href={'/?paybackAmount='+fd.paybackAmount}>{d(fd.paybackAmount)}</a>
+					</span>
+				</div>
+
+				<div className='merchant-info'>
+					<a href={'/?merchId='+fd.merchId}>Merchant {fd.merchId}</a><br/>
+					<a href={'/?zipCode='+fd.zipCode}>{fd.locStr}</a><br/>
+				</div>
+
+				<div className='sector-info'>
+					<a href={'/?sector='+encodeURIComponent(fd.sector)}>{fd.sector}</a><br/>
+					<a href={'/?industry='+encodeURIComponent(fd.industry)}>{fd.industry}</a>
+				</div>
+			</div>
+		)
+	}
+})
+
+var FundList = React.createClass({
+	getInitialState:function(){
+		if(this.props.data.totalPages>1){
+			$(window).scroll($.throttle( 250, function(){
+				if($('html').height()-$(window).scrollTop()<1000){
+					if(!window.waitingForLoad) this.loadMore();
+				}
+			}).bind(this));
+		}
+		return {
+			nextAnchorId:this.props.data.nextAnchorId,
+			funds:this.props.data.documents
+		}
+	},
+	loadMore:function(){
+		window.waitingForLoad=true;
+		//props should be immutable???
+		this.props.query.nextAnchorId = this.state.nextAnchorId;
+		$.ajax({
+			context:this,
+			url: "db/advance",
+			data: this.props.query
+		}).done(function( msg ) {
+			window.waitingForLoad=false;
+			if(!msg.nextAnchorId){
+				$(window).unbind('scroll');
+			}
+			this.setState({funds:this.state.funds.concat(msg.documents), nextAnchorId:msg.nextAnchorId});
+		});
+	},
+	render:function(){
+		var count =0;
+		fundsNodes = _.map(this.state.funds,function(id){count++; return (<Fund key={count} fundData={id} />)})
+		return( <div><QueryForm queryData={this.props.query} />{fundsNodes}</div> )
+	}
+})
+
+
+var PaymentTable = React.createClass({
+
+  getInitialState:function() {
+    return {
+	  payments:this.props.payments,
+      sortBy: 'fundId',
+      sortDir: null
+    }
+  },
+	_sortRowsBy:function(cellDataKey) {
+
+	    var sortDir = this.state.sortDir;
+	    var sortBy = cellDataKey;
+	    if (sortBy === this.state.sortBy) {
+	      sortDir = this.state.sortDir === SortTypes.ASC ? SortTypes.DESC : SortTypes.ASC;
+	    } else {
+	      sortDir = SortTypes.DESC;
+	    }
+	    
+	    var sortedrows = this.state.payments.slice();
+	    sortedrows.sort(function(a, b){
+	      var sortVal = 0;
+	      if (a[sortBy] > b[sortBy]) {
+	        sortVal = 1;
+	      }
+	      if (a[sortBy] < b[sortBy]) {
+	        sortVal = -1;
+	      }
+	      
+	      if (sortDir === SortTypes.DESC) {
+	        sortVal = sortVal * -1;
+	      }
+	      
+	      return sortVal;
+	    });
+	    this.setState({
+	      payments:sortedrows,
+	      sortBy:sortBy,
+	      sortDir:sortDir,
+	    });
+	  },
+
+	_renderHeader:function(label, cellDataKey) {
+		return (
+			<a onClick={this._sortRowsBy.bind(null, cellDataKey)}>{label}</a>
+		);
+	},
+
+	_rowGetter: function(rowIndex) {
+	 	return this.state.payments[rowIndex];
+	},
+
+	render:function(){
+		var sortDirArrow = '';
+
+		if (this.state.sortDir !== null){
+			sortDirArrow = this.state.sortDir === SortTypes.DESC ? ' ↓' : ' ↑';
+		}
+
+		var schema = [
+	    	{key:'paymentId',label:'Payment Id',width:100,fixed:true},
+	    	// {key:'merchId',label:'Merchant Id',width:100},
+	    	{key:'systemDate',label:'System Date',width:120},
+			{key:'amount',label:'Amount',width:80},
+	    	{key:'pmtCode',label:'Payment Code',width:120},
+			{key:'achCode',label:'ACH Code',width:100}
+	    ];
+
+	    var columns = [];
+	    for (var i = 0; i < schema.length; i++) {
+	    	columns.push(<Column
+	          headerRenderer={this._renderHeader}
+	          dataKey={schema[i].key}
+	          cellRenderer={schema[i].renderer}
+	          fixed={schema[i].fixed}
+	          label={schema[i].label + (this.state.sortBy === schema[i].key ? sortDirArrow : '')}
+	          width={schema[i].width} />);
+	    };
+
+		return(
+			<div className='chart-holder table-holder'>
+			    <Table
+				    rowHeight={30}
+				    rowGetter={this._rowGetter}
+				    rowsCount={this.state.payments.length}
+				    width={600}
+				    height={300}
+				    headerHeight={30}>
+				    {columns}
+				  </Table>
+			</div>
+		);
+	}
+});
+
+
+var GoogleLineChart = React.createClass({
+  render: function(){
+    return (
+    	<div className='chart-holder'></div>
+    )
+  },
+  componentDidMount: function(){
+    this.drawCharts();
+  },
+  componentDidUpdate: function(){
+    this.drawCharts();
+  },
+  drawCharts: function(){
+  	var that = this;
+    data = new google.visualization.DataTable();
+    data.addColumn('date', 'Time');
+    data.addColumn('number', 'Amount');
+	// data.addColumn({type: 'string', role: 'annotation'});
+	// data.addColumn({type: 'string', role: 'annotationText', p: {html:true}});
+    data.addColumn({type: 'string', role: 'tooltip', p: {html:true}});
+    data.addColumn({type:'string', role:'style'});
+    data.addColumn('number', 'Funded');
+    data.addColumn('number', 'Payback Amount');
+
+	var count = 0;
+	var cumulativePayment = 0;
+	var numPayments = this.props.lineData.length;
+	var newValues = _.map(this.props.lineData,function(payment){
+		count++;
+		annotation = '';
+		annotationText = '';
+		fundedAmt = null;
+		paybackAmt = null;
+		style = '';
+
+
+		paybackAmt = that.props.fundData.paybackAmount;
+		fundedAmt = that.props.fundData.fundedAmount;
+
+		if(cumulativePayment>fundedAmt) style = 'line {color: #a4cd4d}';
+		if(payment.pmtCode=="B") style = 'line {color: #DD0000}';
+
+		if(payment.pmtCode=="P") cumulativePayment += Math.round(payment.amount);
+		else{
+			annotation = payment.pmtCode;
+			annotationText = JSON.stringify(payment);
+		}
+
+		var date = new Date(payment.systemDate);
+		var htmlToolTip = '<p><strong>'+date.toDateString()+'</strong><br/>$'+payment.amount+'</p>';
+		
+		return [
+			date,
+			cumulativePayment,
+			// annotation,
+			// annotationText,
+			htmlToolTip,
+			style,
+			fundedAmt,
+			paybackAmt
+		]
+	});
+
+    data.addRows(newValues);
+    // data.addRows([[0,this.props.fundedAmount],[count,this.props.fundedAmount]]);
+	var options = {
+		fontName: 'Lucida Grande',
+		legend: 'none',
+		// backgroundColor: { fill: "#223141" },
+		chartArea: {
+			width: '100%',
+			height: '100%'
+		},
+		backgroundColor: { fill:'transparent' },
+		vAxis: { 
+		    gridlines: {color: 'transparent'},
+			textPosition: 'none'
+		},
+		hAxis: {
+		    textPosition: 'none',
+			gridlines: {
+				color: '#888',
+			},
+            count: -1,
+		},
+		title:'',
+		width:600,height:300, 
+		colors:['#c3c5c7','#FFB700','#a4cd4d'],
+		tooltip:{isHtml: true}
+	};
+    var chart = new google.visualization.LineChart(React.findDOMNode(this));
+    chart.draw(data, options);
+  }
+});
+
+var options = {
+	dataType: "script",
+	cache: true,
+	url: "https://www.google.com/jsapi",
+};
+
+jQuery.ajax(options).done(function(){
+	google.load("visualization", "1", {
+		packages:["corechart"],
+		callback: function() {
+			var query = {{{query}}};
+			var data = {{{funds}}};
+
+			React.render(<FundList query={query} data={data} />,mountNode)
+		}
+	});
+});
+
+</script>
+</body>
+</html>

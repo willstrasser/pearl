@@ -1,0 +1,254 @@
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  margin:0;
+  background: #5a748d;
+  /*background: #0071BC;*/
+  color:white;
+}
+strong{
+	font-weight: 500;
+}
+
+a {
+  color: #00B7FF;
+}
+a:hover{
+	color:#41ddff;
+}
+header{
+	display: block;
+	height:4em;
+	position: relative;
+	background: #2d363f;
+	background-color: rgba(0,0,0,.5);
+	background-color: rgba(255,255,255,.75);
+	background-color: white;
+	padding:0 2em;
+	position: fixed;
+	z-index: 10000000;
+	top:0;
+	left:0;
+	right:0;
+}
+h1{
+	width:250px;
+	height:100%;
+	background-image:url(../images/logo-white.svg);
+	background-size: auto 70%;
+	background-position: left center;
+	background-repeat: no-repeat;
+	text-indent: -9999px;
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+}
+header #right-stuff{
+	float:right;
+	line-height: 4rem;
+}
+nav{
+	width:250px;
+	min-height:100%;
+	float: left;
+	background-color: rgba(0,0,0,.4);
+	position: fixed;
+	top:4em;
+}
+nav #profile-header{
+	height:300px;
+}
+nav ul{
+	padding: 0;
+	border-top: 1px solid rgba(255,255,255,.2);
+	background-color: rgba(0,0,0,.1);
+}
+nav ul li a{
+	display: block;
+	height:3.5em;
+	line-height: 3.5em;
+	padding-left: 2em;
+	color:#ddd;
+	text-decoration: none;
+	font-weight: 600;
+	letter-spacing: 1px;
+	border-bottom: 1px solid rgba(255,255,255,.2);
+}
+nav ul li a:hover{
+	background-color: #124c78;
+	color:#fff;
+}
+nav ul li.cur-page a{
+	background-color:#1b71b4; 
+	border-right:3px solid #0e8ff3;
+	color:#fff;
+}
+#fund-list-holder{
+	margin-left: 250px;
+}
+.fund{
+	margin:1em 1em 1em;
+	background-color: rgba(0,0,0,.2);
+	height:300px;
+	padding: 1em;
+	position:relative;
+}
+.fund:hover{
+	background-color: rgba(0,0,0,.3);
+}
+.fund .fund-details{
+	margin-right: 10px;
+	vertical-align: top;
+}
+.fund .fund-details a{
+	color:inherit;
+	text-decoration: none;
+}
+.fund .fund-details a:hover{
+	text-decoration: underline;
+}
+.fund .fund-details>div{
+	/*vertical-align: top;*/
+}
+.open .fund-details{
+	display: inline-block;
+	width:200px;
+}
+.fund .fund-title{
+	font-size: 2em;
+	/*color:#a4cd4d;*/
+	font-weight: 600;
+}
+.fund{
+	display: block;
+	overflow: hidden;
+	height:4.3em;
+	border-left: 3px solid #a4cd4d;
+	border-right: .5px solid #888;
+	border-top: .5px solid #888;
+	border-bottom: .5px solid #888;
+	cursor: pointer;
+}
+.fund.open{
+	height:auto;
+	cursor: auto;
+}
+.fund .view-toggle{
+	display: none;
+	position:absolute;
+	bottom:1em;
+	left:1em;
+}
+
+.fund .view-toggle .fa{
+	padding: .3em;
+	background-color: rgba(0,0,0,.2);
+}
+.showing-chart .view-toggle .fa-line-chart,
+.showing-table .view-toggle .fa-table{
+	background-color: black!important;
+}
+
+.open .view-toggle {
+	display: block;
+	text-align: right;
+	width:200px;
+}
+.default .fund-title{
+	/*color:#ee6f4f;*/
+}
+.default{
+	border-left: 3px solid #ee6f4f;
+}
+.fund .date-info{
+	font-weight: 500;
+}
+.fund .basic-info{
+	display: inline-block;
+	width:230px;
+}
+.fund .amount-info{
+	margin-top: 1em;
+	display: inline-block;
+	width:200px;
+}
+.fund .funded-amount{
+	color:#FFB700;
+}
+.fund .payback-amount{
+	color:#a4cd4d;
+}
+.fund .merchant-info{
+	margin-top: 1em;
+	display: inline-block;
+	width:200px;
+}
+.fund .sector-info{
+	margin-top: 1em;
+	display: inline-block;
+}
+.fund .chart-holder{
+	display: inline-block;
+	width:400px;
+}
+.showing-chart .chart-holder{
+	color:black;
+}
+.table-holder{
+	font-size: .8em;
+}
+
+.hidden{
+	height:0;
+	margin-top:3.5rem;
+	overflow: hidden
+}
+.query-form{
+	background-color:rgba(255,255,255,.45);
+	color:black;
+	padding: 5rem 1rem 1em;
+	margin: 0 1rem;
+	border-left: 3px solid white;
+	font-size: .9em;
+	font-weight: 500;
+	font-color:#666;
+
+}
+.query-bit{
+	display: inline-block;
+	font-style: italic;
+}
+.query-bit:before{
+	content: ' ';
+}
+.query-bit:after{
+	content: ', ';
+}
+.query-bit:last-child:after{
+	content:'.';
+}
+.query-form input{
+	background-color: transparent;
+	font-size: 1em;
+	color:inherit;
+	outline: none;
+	border:none;
+	font-weight:inherit;
+	height:1.5em;
+	font-family: inherit;
+	margin-top: .5em;
+	/*display: none;*/
+}
+.query-bit.editing input{
+	display: inline-block;
+	width:auto;
+}
+
+.query-bit:hover span.value-text{
+	/*text-decoration: underline;*/
+}
+
+.query-bit.editing span.value-text{
+	display: none;
+}

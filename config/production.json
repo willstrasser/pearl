@@ -1,0 +1,9 @@
+{
+	"dbURL":"mongodb://pearluser:QXk-8Ed-8Ur-wzd@ds061741.mongolab.com:61741/pearl",
+	"sessionsecret":"AWOEIJFODSKJKXCXVOS2345678LKDJFOSKDJFLK",
+	"fb":{
+		"appID":"909724155755926",
+		"appSecret":"528190bd9ed826ecd3166d3b039365a1",
+		"callbackURL":"http://pearlcap.herokuapp.com/auth/facebook/callback"
+	}
+}
