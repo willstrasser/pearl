@@ -4,6 +4,6 @@
 	"fb":{
 		"appID":"909724155755926",
 		"appSecret":"528190bd9ed826ecd3166d3b039365a1",
-		"callbackURL":"http://pearlcap.herokuapp.com/auth/facebook/callback"
+		"callbackURL":"https://pearlcap.herokuapp.com/auth/facebook/callback"
 	}
 }
