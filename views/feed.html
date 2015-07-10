@@ -13,7 +13,6 @@
     <script src="http://underscorejs.org/underscore-min.js"></script>
     <script src="http://momentjs.com/downloads/moment.min.js"></script>
     <script src="https://raw.githubusercontent.com/cowboy/jquery-throttle-debounce/v1.1/jquery.ba-throttle-debounce.min.js"></script>
-
     <script src="/javascripts/fixed-data-table.min.js"></script>
     <link rel="stylesheet" href="/stylesheets/fixed-data-table.css" />
 </head>
@@ -21,10 +20,11 @@
 <div id="main">
 	<header>
 		<h1>Pearl</h1>
-		<div id='right-stuff'><a href="#"><i class="fa fa-cog"></i></a></div>
+		<div id='user-toolbar'>
+		</div>
 	</header>
 	<nav>
-		<!-- <div id="profile-header"><img src="#"/></div> -->
+		<div id="profile-header"></div>
 		<ul>
 			<li class="cur-page"><a href="/"><i class="fa fa-line-chart"></i> Activity</a></li>
 			<li><a href="/advances"><i class="fa fa-table"></i> Details</a></li>
@@ -45,10 +45,38 @@ var waitingForLoad = false;
 var PropTypes = React.PropTypes;
 var Table = FixedDataTable.Table;
 var Column = FixedDataTable.Column;
-var SortTypes = {
-  ASC: 'ASC',
-  DESC: 'DESC',
-};
+var SortTypes = { ASC: 'ASC', DESC: 'DESC'};
+
+var UserToolbar = React.createClass({
+	render:function(){
+		return(
+			<div>
+				Logged in as: {this.props.user.fullname} | <a href="/logout">Log Out</a> | <a> <i className="fa fa-cog"></i> </a>
+			</div>
+		)
+	}
+});
+
+var user = {{{user}}};
+React.render(<UserToolbar user={user} />, document.getElementById('user-toolbar'));
+
+var ProfileHeader = React.createClass({
+	render:function(){
+		var profPicLarge = "http://graph.facebook.com/"+this.props.user.profileID+"/picture?type=large";
+		return(
+			<div>
+				<img src={profPicLarge}/>
+				<h2>{this.props.user.fullname}</h2>
+			</div>
+		)
+	}
+});
+
+React.render(<ProfileHeader user={user} />, document.getElementById('profile-header'));
+
+
+
+
 
 
 var QueryForm = React.createClass({
@@ -58,9 +86,10 @@ var QueryForm = React.createClass({
     	}
     },
     onFormSubmit:function(e){
-        $('form').children(':input[value=""]').attr("disabled", "disabled");
-        // e.preventDefault();
-    	$('form').submit();
+        e.preventDefault();
+    	var key = $('form select').val();
+    	var value = $('form input').val();
+    	window.location.href="/?"+key+"="+value;
     },
     render:function(){
     	var qd = this.state.queryData;
@@ -68,44 +97,37 @@ var QueryForm = React.createClass({
     	if(qd.fundId) 			selectors.push(<QueryString qKey='fundId' label='Fund ID matching' value={qd.fundId} />)
     	if(qd.merchId) 			selectors.push(<QueryString qKey='merchId' label='Merchant ID matching' value={qd.merchId} />)
     	if(qd.term) 			selectors.push(<QueryString qKey='term' label='Term of' value={qd.term} />)
-    	if(qd.fundedAmount) 	selectors.push(<QueryString qKey='fundedAmount' label='Funding amount of' value={qd.fundedAmount} />)
+    	if(qd.fundedAmount) 	selectors.push(<QueryString qKey='fundedAmount' label='Funded amount of' value={qd.fundedAmount} />)
     	if(qd.paybackAmount)	selectors.push(<QueryString qKey='paybackAmount' label='Payback Amount amount of' value={qd.paybackAmount} />)
     	if(qd.status) 			selectors.push(<QueryString qKey='status' label='Status is' value={qd.status} />)
     	if(qd.zipCode) 			selectors.push(<QueryString qKey='zipCode' label='Zip Code is' value={qd.zipCode} />)
     	if(qd.sector) 			selectors.push(<QueryString qKey='sector' label='Sector is' value={qd.sector} />)
     	if(qd.industry) 		selectors.push(<QueryString qKey='industry' label='Industry is' value={qd.industry} />)
-
-  //   	var oqd = {{{query}}};
-		// defaultValue={oqd.fundId||''}
-		// defaultValue={oqd.merchId||''}
-		// defaultValue={oqd.term||''}
-		// defaultValue={oqd.fundedAmount||''}
-		// defaultValue={oqd.paybackAmount||''}
-		// defaultValue={oqd.status||''}
-		// defaultValue={oqd.zipCode||''}
-		// defaultValue={oqd.sector||''}
-		// defaultValue={oqd.industry||''}
     	return(
-    		<div className={selectors.length>0?'query-form':'hidden'}>
-    			Showing __ fundings which match:{selectors}<br/>
-    			<div>
-    			<form onSubmit={this.onFormSubmit}>
-    				<label for='fundId'>Fund ID: </label>				<input defaultValue='' name='fundId'/><br/>
-    				<label for='merchId'>Merchant ID: </label>			<input defaultValue='' name='merchId'/><br/>
-    				<label for='term'>Term: </label>					<input defaultValue='' name='term'/><br/>
-    				<label for='fundedAmount'>Funded Amount: </label>	<input defaultValue='' name='fundedAmount'/><br/>
-    				<label for='paybackAmount'>Payback Amount: </label>	<input defaultValue='' name='paybackAmount'/><br/>
-    				<label for='status'>Status: </label>				<input defaultValue='' name='status'/><br/>
-    				<label for='zipCode'>Zip Code: </label>				<input defaultValue='' name='zipCode'/><br/>
-    				<label for='sector'>Sector: </label>				<input defaultValue='' name='sector'/><br/>
-    				<label for='industry'>Industry: </label>			<input defaultValue='' name='industry'/><br/>
-    				<input type="submit" />
-    			</form>
-    			</div>
+    		<div>
+	    		<div className='query-form'>
+	    		<form onSubmit={this.onFormSubmit}>
+	    			<div className='select-style'>
+	    			<select name='field'>
+	    				<option value='title'>Filter By:</option>
+	    				<option value='fundId'>Fund ID</option>
+	    				<option value='merchId'>Merchant ID</option>
+	    				<option value='term'>Term</option>
+	    				<option value='fundedAmount'>Funded Amount</option>
+	    				<option value='paybackAmount'>Payback Amount</option>
+	    				<option value='status'>Status</option>
+	    				<option value='zipCode'>Zip Code</option>
+	    				<option value='sector'>Sector</option>
+	    				<option value='industry'>Industry</option>
+	    			</select>
+	    			</div>
+	    			<input placeholder='Value' name='val'/>
+	    		</form>
+	    		</div>
+				<div className={selectors.length>0?'query-info':'hidden'}>Fundings which match:{selectors} | <a href="#">Save Query</a></div>
     		</div>
     	)
     }
-
 });
 
 var QueryString = React.createClass({

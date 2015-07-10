@@ -7,6 +7,16 @@ body {
   /*background: #0071BC;*/
   color:white;
 }
+body.login{
+	background-color:white;
+	font-weight: 18px;
+	text-align: center;
+	padding:2em;
+}
+body.login img{
+	margin: 0 auto;
+	display: block;
+}
 strong{
 	font-weight: 500;
 }
@@ -44,9 +54,14 @@ h1{
 	margin: 0;
 	padding: 0;
 }
-header #right-stuff{
+header #user-toolbar{
 	float:right;
 	line-height: 4rem;
+	color:#666;
+}
+
+header #user-toolbar a{
+	text-decoration: none;
 }
 nav{
 	width:250px;
@@ -57,7 +72,13 @@ nav{
 	top:4em;
 }
 nav #profile-header{
-	height:300px;
+	height:13em;
+	text-align: center;
+	padding: 2em;
+}
+nav #profile-header img{
+	width: 140px;
+	-webkit-clip-path: circle(70px at center);
 }
 nav ul{
 	padding: 0;
@@ -200,9 +221,7 @@ nav ul li.cur-page a{
 }
 
 .hidden{
-	height:0;
-	margin-top:3.5rem;
-	overflow: hidden
+	display: none;
 }
 .query-form{
 	background-color:rgba(255,255,255,.45);
@@ -212,7 +231,7 @@ nav ul li.cur-page a{
 	border-left: 3px solid white;
 	font-size: .9em;
 	font-weight: 500;
-	font-color:#666;
+	overflow: hidden;
 
 }
 .query-bit{
@@ -225,30 +244,81 @@ nav ul li.cur-page a{
 .query-bit:after{
 	content: ', ';
 }
-.query-bit:last-child:after{
-	content:'.';
+.field-group{
+	display: block;
+}
+.select-style {
+	font-family: inherit;
+    width: 160px;
+    border-radius: 5px 0 0 5px;
+    float: left;
+    cursor: pointer;
+    overflow: hidden;
+    border-left:1px solid rgba(255,255,255,.3);
+    border-top:1px solid rgba(255,255,255,.3);
+    border-bottom:1px solid rgba(255,255,255,.3);
+    background: rgba(90, 116, 141, .3) url("data:image/png;base64,R0lGODlhDwAUAIABAAAAAP///yH5BAEAAAEALAAAAAAPABQAAAIXjI+py+0Po5wH2HsXzmw//lHiSJZmUAAAOw==") no-repeat 97% 50%;
+}
+
+.select-style select {
+	font-family: inherit;
+	font-size: .8rem;
+    padding: 5px 8px;
+    width: 130%;
+    border:none;
+    box-shadow: none;
+    background: transparent;
+    background-image: none;
+    -webkit-appearance: none;
+}
+
+.select-style select:focus {
+    outline: none;
 }
 .query-form input{
-	background-color: transparent;
-	font-size: 1em;
-	color:inherit;
-	outline: none;
-	border:none;
-	font-weight:inherit;
-	height:1.5em;
-	font-family: inherit;
-	margin-top: .5em;
-	/*display: none;*/
-}
-.query-bit.editing input{
-	display: inline-block;
-	width:auto;
+    background: rgba(90, 116, 141, .1);
+    border:none;
+    border-right:1px solid rgba(255,255,255,.3);
+    border-top:1px solid rgba(255,255,255,.3);
+    border-bottom:1px solid rgba(255,255,255,.3);
+    float: left;
+    border-radius: 0 5px 5px 0;
+    margin-left: 0;
+    padding: .5em;
+	font-size: .8rem;
+	height:2.65em;
 }
 
-.query-bit:hover span.value-text{
-	/*text-decoration: underline;*/
+.query-info{
+	margin: 2em 1em;
 }
 
-.query-bit.editing span.value-text{
-	display: none;
+::-webkit-input-placeholder {
+   color: #666;
 }
+
+:-moz-placeholder { 
+   color: #666;
+}
+
+::-moz-placeholder { 
+   color: #666;
+}
+
+:-ms-input-placeholder {  
+   color: #666;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

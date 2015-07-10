@@ -9,12 +9,8 @@ module.exports = function(express, app, passport, config, mongoose){
 	})
 
 	function securePages(req,res,next){
-		if(req.isAuthenticated()){
-			next();
-		}
-		else{
-			res.redirect('/login');
-		}
+		if(req.isAuthenticated()) next();
+		else res.redirect('/login');
 	}
 
 	router.get('/auth/facebook',passport.authenticate('facebook'));
@@ -30,7 +26,11 @@ module.exports = function(express, app, passport, config, mongoose){
 
 		request('http://'+req.headers.host+'/db/advance'+req.url, function(error,response,body){
 		  if (!error && response.statusCode == 200) {
-		  	res.render('feed', { funds:response.body, query:JSON.stringify(query)});
+		  	res.render('feed', {
+		  		funds:response.body,
+		  		query:JSON.stringify(query),
+		  		user:JSON.stringify(req.user)
+		  	});
 		  }
 		})
 	});
@@ -92,7 +92,7 @@ module.exports = function(express, app, passport, config, mongoose){
 				}
 			};
 			res.json(result);
-		}, 30, nextId).setOptions({ lean: true });
+		}, 30, nextId).setOptions({ lean: true, sort:{fundId:-1} });
 	});
 
 	router.get('/db/advance/all', function(req, res, next) {
