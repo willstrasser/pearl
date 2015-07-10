@@ -89,6 +89,7 @@ var QueryForm = React.createClass({
         e.preventDefault();
     	var key = $('form select').val();
     	var value = $('form input').val();
+    	if(key=="title") return;
     	window.location.href="/?"+key+"="+value;
     },
     render:function(){
