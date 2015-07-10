@@ -78,7 +78,7 @@ nav #profile-header{
 }
 nav #profile-header img{
 	width: 120px;
-	-webkit-clip-path: circle(70px at center);
+	-webkit-clip-path: circle(60px at center);
 }
 nav ul{
 	padding: 0;
