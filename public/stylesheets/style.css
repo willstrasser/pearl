@@ -254,6 +254,7 @@ nav ul li.cur-page a{
     float: left;
     cursor: pointer;
     overflow: hidden;
+    height: 2.65em;
     border-left:1px solid rgba(255,255,255,.3);
     border-top:1px solid rgba(255,255,255,.3);
     border-bottom:1px solid rgba(255,255,255,.3);
