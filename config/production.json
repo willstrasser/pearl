@@ -1,5 +1,5 @@
 {
-	"dbURL":"mongodb://pearluser:QXk-8Ed-8Ur-wzd@ds061741.mongolab.com:61741/pearl",
+	"dbURL":"---",
 	"sessionsecret":"AWOEIJFODSKJKXCXVOS2345678LKDJFOSKDJFLK",
 	"fb":{
 		"appID":"909724155755926",
