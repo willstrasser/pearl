@@ -2,7 +2,7 @@
 
 The assignment basically asked me to take 400,000 rows of data and make it look good. 
 
-# [Take a look!](https://pearl.herokuapp.com)
+# [Take a look!](https://pearlcap.herokuapp.com)
 
 My goal was to get away from a spreadsheet representation and go with something that felt more like a social media feed. Fundings are served in a infinite scroll with basic details displayed in a readable format. Clicking on a fund exposes payment details in a line chart, with a toggle to switch to a table view. Clicking any funding detail links will filter the feed to all funds that match that field's value.
 
